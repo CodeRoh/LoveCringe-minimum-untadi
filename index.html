@@ -6,7 +6,7 @@
 <title>Valentine?</title>
 
 <style>
-* { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+* { box-sizing: border-box; font-family: Arial, sans-serif; }
 
 body {
   margin: 0;
@@ -18,116 +18,115 @@ body {
   overflow: hidden;
 }
 
-/* Floating hearts */
+/* FLOATING HEARTS */
 .heart {
   position: fixed;
+  bottom: -30px;
   font-size: 22px;
-  animation: float 8s linear infinite;
-  opacity: 0.7;
+  animation: floatUp 7s linear forwards;
+  pointer-events: none;
+  z-index: 1;
 }
 
-@keyframes float {
-  from { transform: translateY(100vh); }
-  to { transform: translateY(-120vh); }
+@keyframes floatUp {
+  to {
+    transform: translateY(-120vh);
+    opacity: 0;
+  }
 }
 
+/* CARD */
 .card {
   background: white;
-  padding: 40px 20px;
-  border-radius: 20px;
+  padding: 30px 18px;
+  border-radius: 16px;
+  width: 320px;
   text-align: center;
-  width: min(90%, 420px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-  z-index: 10;
+  position: relative;
+  z-index: 5;
 }
 
 h1 {
   color: #ff2e63;
-  font-size: 1.7rem;
-  margin-bottom: 25px;
+  font-size: 1.4rem;
 }
 
+/* BUTTON AREA */
 .buttons {
   position: relative;
   height: 180px;
-  width: 100%;
+  margin-top: 18px;
 }
 
-button {
-  padding: 12px 28px;
+/* YES */
+#yesBtn {
+  position: absolute;
+  left: 50%;
+  top: 58px;
+  transform: translateX(-50%);
+  padding: 12px 24px;
   font-size: 18px;
   border-radius: 30px;
   border: none;
-  cursor: pointer;
-}
-
-#yesBtn {
   background: #ff2e63;
   color: white;
+  z-index: 2;
 }
 
+/* NO */
 #noBtn {
-  background: #e0e0e0;
-  color: #333;
   position: absolute;
   left: 50%;
-  top: 100px;
+  top: 118px;
   transform: translateX(-50%);
-  transition: left 0.35s ease, top 0.35s ease;
+  padding: 12px 24px;
+  font-size: 18px;
+  border-radius: 30px;
+  border: none;
+  background: #e0e0e0;
+  transition: left 0.25s ease, top 0.25s ease;
+  z-index: 3;
 }
 
-/* Funny text bubble */
+/* NO TEXT */
 .no-text {
   position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
   background: black;
   color: white;
-  padding: 6px 12px;
-  border-radius: 14px;
-  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 12px;
   white-space: nowrap;
-  animation: fadeUp 1.4s forwards;
   z-index: 99;
 }
 
-@keyframes fadeUp {
-  to { opacity: 0; transform: translateY(-20px); }
-}
-
-/* Celebration */
-.celebrate {
+/* YES OVERLAY */
+.yes-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.72);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 999;
 }
 
-.celebrate img {
-  width: min(80%, 300px);
-  border-radius: 20px;
+/* CAT GIF */
+.yes-overlay img {
+  width: 200px;
+  max-width: 80%;
+  border-radius: 16px;
 }
 
-.celebrate h2 {
+.yes-text {
   color: white;
+  font-size: 1.3rem;
+  margin-top: 16px;
   text-align: center;
-}
-
-/* Confetti */
-.confetti {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  animation: fall 4s linear forwards;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(120vh) rotate(720deg);
-    opacity: 0;
-  }
 }
 </style>
 </head>
@@ -136,116 +135,93 @@ button {
 
 <div class="card">
   <h1>Subu will you be my valentine? 💖</h1>
-  <div class="buttons" id="btnArea">
+  <div class="buttons">
     <button id="yesBtn">Yes 💘</button>
     <button id="noBtn">No 💔</button>
   </div>
 </div>
 
+<!-- AUDIO -->
+<audio id="yesSound" preload="auto">
+  <source src="fahhhhh.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-const noBtn = document.getElementById('noBtn');
-const yesBtn = document.getElementById('yesBtn');
-const btnArea = document.getElementById('btnArea');
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const yesSound = document.getElementById("yesSound");
 
-/* Floating hearts */
-setInterval(() => {
-  const h = document.createElement('div');
-  h.className = 'heart';
-  h.textContent = Math.random() > 0.5 ? '❤️' : '💖';
-  h.style.left = Math.random() * 100 + 'vw';
-  h.style.fontSize = Math.random() * 18 + 18 + 'px';
-  h.style.animationDuration = Math.random() * 4 + 6 + 's';
+/* HEART SPAWNER */
+function spawnHeart() {
+  const h = document.createElement("div");
+  h.className = "heart";
+  h.textContent = Math.random() > 0.5 ? "❤️" : "💖";
+  h.style.left = Math.random() * 100 + "vw";
   document.body.appendChild(h);
-  setTimeout(() => h.remove(), 9000);
-}, 700);
+  setTimeout(() => h.remove(), 7000);
+}
+setInterval(spawnHeart, 700);
 
-/* Funny texts */
-const funnyTexts = [
-  "Nice try 😏",
-  "Almost 😂",
-  "Wrong button",
-  "Nope 🙃",
-  "Heart says YES ❤️",
-  "Still trying 😄",
-  "Denied politely 😌"
+/* UPDATED TELUGU TEXTS */
+const texts = [
+  "No cheppe chance ea ledu → ❌",
+  "abba kamal hassan NO anta, lol → 😂",
+  "Gammuna YES kottu → 👉",
+  "Saal iga enni saarlu click chesthav, yes kottu → 😤"
 ];
 
-/* Move NO around YES */
+/* SAFE POSITIONS */
+const positions = [
+  { x: 18,  y: 18  },
+  { x: 210, y: 18  },
+  { x: 18,  y: 140 },
+  { x: 210, y: 140 }
+];
+
+/* MOVE NO */
 function moveNo() {
-  const area = btnArea.getBoundingClientRect();
-  const yes = yesBtn.getBoundingClientRect();
-  const no = noBtn.getBoundingClientRect();
-  const padding = 12;
-
-  const positions = [
-    { x: yes.left - area.left - no.width - padding, y: yes.top - area.top },
-    { x: yes.right - area.left + padding, y: yes.top - area.top },
-    { x: yes.left - area.left, y: yes.top - area.top - no.height - padding },
-    { x: yes.left - area.left, y: yes.bottom - area.top + padding }
-  ];
-
   const pos = positions[Math.floor(Math.random() * positions.length)];
-
-  const maxX = area.width - no.width - padding;
-  const maxY = area.height - no.height - padding;
-
-  const x = Math.max(padding, Math.min(pos.x, maxX));
-  const y = Math.max(padding, Math.min(pos.y, maxY));
-
-  noBtn.style.left = x + 'px';
-  noBtn.style.top = y + 'px';
-
-  showText(x, y);
+  noBtn.style.left = pos.x + "px";
+  noBtn.style.top = pos.y + "px";
+  showText();
 }
 
-function showText(x, y) {
-  const t = document.createElement('div');
-  t.className = 'no-text';
-  t.textContent = funnyTexts[Math.floor(Math.random() * funnyTexts.length)];
-  t.style.left = (x + noBtn.offsetWidth / 2) + 'px';
-  t.style.top = (y - 10) + 'px';
-  btnArea.appendChild(t);
-  setTimeout(() => t.remove(), 1400);
+/* SINGLE TEXT */
+function showText() {
+  const old = noBtn.querySelector(".no-text");
+  if (old) old.remove();
+
+  const t = document.createElement("div");
+  t.className = "no-text";
+  t.textContent = texts[Math.floor(Math.random() * texts.length)];
+  noBtn.appendChild(t);
+
+  setTimeout(() => t.remove(), 2800);
 }
 
-/* MOBILE-FIRST triggers */
-noBtn.addEventListener('touchstart', e => {
+/* EVENTS */
+noBtn.addEventListener("mouseenter", moveNo);
+noBtn.addEventListener("mousedown", moveNo);
+noBtn.addEventListener("touchstart", e => {
   e.preventDefault();
   moveNo();
 });
 
-btnArea.addEventListener('touchstart', e => {
-  const touch = e.touches[0];
-  const r = noBtn.getBoundingClientRect();
-  const d = Math.hypot(
-    touch.clientX - (r.left + r.width / 2),
-    touch.clientY - (r.top + r.height / 2)
-  );
-  if (d < 70) moveNo();
-});
+/* YES CLICK — SOUND + CAT GIF */
+yesBtn.addEventListener("click", () => {
+  yesSound.currentTime = 0;
+  yesSound.play().catch(() => {});
 
-/* Desktop fallback */
-noBtn.addEventListener('mouseenter', moveNo);
-
-/* YES celebration */
-yesBtn.addEventListener('click', () => {
-  const overlay = document.createElement('div');
-  overlay.className = 'celebrate';
+  const overlay = document.createElement("div");
+  overlay.className = "yes-overlay";
   overlay.innerHTML = `
-    <img src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif">
-    <h2>YAYYY 💞<br>Valentine secured 😌❤️</h2>
+    <img src="https://media.tenor.com/NE0S8O0z4o0AAAAC/cute-cat-love.gif">
+    <div class="yes-text">Awww 😽❤️<br>Valentine confirmed!</div>
   `;
   document.body.appendChild(overlay);
 
-  for (let i = 0; i < 180; i++) {
-    const c = document.createElement('div');
-    c.className = 'confetti';
-    c.style.left = Math.random() * 100 + 'vw';
-    c.style.top = '-20px';
-    c.style.background = `hsl(${Math.random()*360},100%,60%)`;
-    c.style.animationDuration = Math.random()*2 + 2 + 's';
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 4000);
+  for (let i = 0; i < 24; i++) {
+    setTimeout(spawnHeart, i * 130);
   }
 });
 </script>
