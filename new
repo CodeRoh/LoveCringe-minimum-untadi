@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Valentine?</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #ff758c, #ff7eb3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Floating hearts */
+.heart {
+  position: fixed;
+  font-size: 22px;
+  animation: float 8s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes float {
+  from { transform: translateY(100vh); }
+  to { transform: translateY(-120vh); }
+}
+
+.card {
+  background: white;
+  padding: 40px 20px;
+  border-radius: 20px;
+  text-align: center;
+  width: min(90%, 420px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+  z-index: 10;
+}
+
+h1 {
+  color: #ff2e63;
+  font-size: 1.7rem;
+  margin-bottom: 25px;
+}
+
+.buttons {
+  position: relative;
+  height: 200px;
+  width: 100%;
+}
+
+button {
+  padding: 12px 28px;
+  font-size: 18px;
+  border-radius: 30px;
+  border: none;
+}
+
+#yesBtn {
+  background: #ff2e63;
+  color: white;
+}
+
+#noBtn {
+  background: #e0e0e0;
+  color: #333;
+  position: absolute;
+  transition: left 0.4s ease, top 0.4s ease;
+}
+
+/* Funny text bubble */
+.no-text {
+  position: absolute;
+  background: black;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 99;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+
+/* Celebration */
+.celebrate {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.celebrate img {
+  width: min(80%, 300px);
+  border-radius: 20px;
+}
+
+.celebrate h2 {
+  color: white;
+  text-align: center;
+}
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  animation: fall 4s linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(120vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>Subu will you be my valentine? 💖</h1>
+  <div class="buttons" id="btnArea">
+    <button id="yesBtn">Yes 💘</button>
+    <button id="noBtn">No 💔</button>
+  </div>
+</div>
+
+<script>
+const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const btnArea = document.getElementById('btnArea');
+
+/* Floating hearts */
+setInterval(() => {
+  const h = document.createElement('div');
+  h.className = 'heart';
+  h.textContent = Math.random() > 0.5 ? '❤️' : '💖';
+  h.style.left = Math.random() * 100 + 'vw';
+  h.style.fontSize = Math.random() * 18 + 18 + 'px';
+  h.style.animationDuration = Math.random() * 4 + 6 + 's';
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 9000);
+}, 700);
+
+/* Telangana Telugu + fun texts */
+const funnyTexts = [
+  "NO button only naam ke vaasthe 😂",
+  "Endi ra idi 😏",
+  "Ala kaadu amma 😂",
+  "YES nokku ra baby ❤️",
+  "Lite teesko 🙃",
+  "Ayyo almost 😄",
+  "Ee NO button pani kaadu!",
+  "Try chesthunnav ga 😂",
+  "Heart already YES annadi ❤️"
+];
+
+/* Orbit movement around YES (no overlap ever) */
+function moveNo() {
+  const area = btnArea.getBoundingClientRect();
+  const yes = yesBtn.getBoundingClientRect();
+  const no = noBtn.getBoundingClientRect();
+
+  const centerX = yes.left - area.left + yes.width / 2;
+  const centerY = yes.top - area.top + yes.height / 2;
+
+  const radius = Math.max(yes.width, yes.height) + 45;
+  const angle = Math.random() * Math.PI * 2;
+
+  let x = centerX + radius * Math.cos(angle) - no.width / 2;
+  let y = centerY + radius * Math.sin(angle) - no.height / 2;
+
+  x = Math.max(10, Math.min(x, area.width - no.width - 10));
+  y = Math.max(10, Math.min(y, area.height - no.height - 10));
+
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
+
+  showText(x, y);
+}
+
+/* Show text longer */
+function showText(x, y) {
+  const t = document.createElement('div');
+  t.className = 'no-text';
+  t.textContent = funnyTexts[Math.floor(Math.random() * funnyTexts.length)];
+  t.style.left = (x + noBtn.offsetWidth / 2) + 'px';
+  t.style.top = (y - 12) + 'px';
+  btnArea.appendChild(t);
+
+  /* Stay visible */
+  setTimeout(() => t.style.opacity = "0", 2400);
+  setTimeout(() => t.remove(), 2800);
+}
+
+/* Mobile + desktop triggers */
+noBtn.addEventListener('touchstart', e => {
+  e.preventDefault();
+  moveNo();
+});
+
+btnArea.addEventListener('touchstart', e => {
+  const t = e.touches[0];
+  const r = noBtn.getBoundingClientRect();
+  const d = Math.hypot(
+    t.clientX - (r.left + r.width / 2),
+    t.clientY - (r.top + r.height / 2)
+  );
+  if (d < 80) moveNo();
+});
+
+noBtn.addEventListener('mouseenter', moveNo);
+
+/* YES celebration */
+yesBtn.addEventListener('click', () => {
+  const overlay = document.createElement('div');
+  overlay.className = 'celebrate';
+  overlay.innerHTML = `
+    <img src="https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif">
+    <h2>YAYYY 💞<br>Valentine secured 😌❤️</h2>
+  `;
+  document.body.appendChild(overlay);
+
+  for (let i = 0; i < 180; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.top = '-20px';
+    c.style.background = \`hsl(\${Math.random()*360},100%,60%)\`;
+    c.style.animationDuration = Math.random()*2 + 2 + 's';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+});
+</script>
+
+</body>
+</html>
